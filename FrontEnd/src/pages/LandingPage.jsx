@@ -62,43 +62,42 @@ const LandingPage = () => {
           </div>
         </header>
 
-        {/* Hero Section */}
-        <div className="flex-1 flex items-center justify-center px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className={`text-5xl md:text-7xl font-bold mb-6 transition-colors duration-500 ${
-              isDarkMode ? 'text-white' : 'text-gray-800'
-            }`}>
-              Spread Smile <span className={`${
-                isDarkMode ? 'text-purple-400' : 'text-purple-600'
-              }`}>Happy Memeing</span>
-            </h1>
+ {/* Hero Section */}
+<div className="flex-1 flex items-center justify-center px-6">
+  <div className="max-w-2xl mx-auto text-center">
+    
 
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
-              <Link
-                to="/signup"
-                className={`flex items-center space-x-2 px-8 py-4 rounded-xl font-semibold text-white text-lg transition-all duration-300 transform hover:scale-105 ${
-                  isDarkMode
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/30'
-                    : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/30'
-                }`}
-              >
-                <span>Join</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              
-              <Link
-                to="/login"
-                className={`flex items-center space-x-2 px-8 py-4 rounded-xl font-semibold text-lg border-2 transition-all duration-300 transform hover:scale-105 ${
-                  isDarkMode 
-                    ? 'border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white' 
-                    : 'border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white'
-                }`}
-              >
-                <span>Sign In</span>
-              </Link>
-            </div>
-          </div>
-        </div>
+    {/* Image container with relative position */}
+ <div className="relative inline-block">
+  <img 
+    src="image.png"
+    alt="Hero Meme" 
+    className="w-64 sm:w-80 md:w-96 rounded-xl shadow-xl" // ← Reduced width
+  />
+
+  {/* Button overlay (unchanged) */}
+  <div className="absolute top-5 left-1/2 transform -translate-x-1/2 rotate-[-15deg] flex space-x-10 p-16">
+    <Link
+      to="/signup"
+      className={`ml-4 w-24 h-24 flex items-center justify-center rounded-full font-semibold text-white transition-all duration-300 transform hover:scale-110 ${
+        isDarkMode 
+          ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-400/30' 
+          : 'border shadow-red-400/30'
+      }`}
+    />
+    <Link
+      to="/login"
+      className={`mr-4 w-24 h-24 flex items-center justify-center rounded-full font-semibold text-white transition-all duration-300 transform hover:scale-110 ${
+        isDarkMode 
+          ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-400/30' 
+          : 'border shadow-red-400/30'
+      }`}
+    />
+  </div>
+</div>
+
+  </div>
+</div>
       </div>
     </div>
   );

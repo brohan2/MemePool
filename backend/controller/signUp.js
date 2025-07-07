@@ -17,7 +17,7 @@ const signUpValidation = z.object({
     confirmpassword:z.string()
 }).refine((data)=>data.password===data.confirmpassword,{
     path:["confirmpassword"],
-    message:"Passwords do not match"
+    error:"Passwords do not match"
 })
 const signUp = async (req, res) => {
   try {
@@ -27,10 +27,11 @@ const signUp = async (req, res) => {
 
     if (!verifyUser.success) {
       return res.status(403).json({
-        message: "Invalid signup",
+        message: verifyUser.error.flatten(),
         errors: verifyUser.error.flatten()
       });
     }
+
 
     const existingUser = await usermodel.findOne({
       $or: [{ email }, { username }]
