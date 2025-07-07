@@ -50,7 +50,7 @@ const UploadPage = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const res = await fetch('http://localhost:5000/api/meme/upload', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/meme/upload`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`, // JWT auth header
