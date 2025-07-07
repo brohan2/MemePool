@@ -7,13 +7,19 @@ services:
       - 80:80
     depends_on: 
       - backend
+    networks:
+      - meme-network
   backend:
     build: ./backend
     ports:
-      - 81:5000
+      - 5000:5000
     env_file:
       - ./backend/.env
+    networks:
+      - meme-network
     
- 
+networks:
+  meme-network:
+    driver: bridge
      
     

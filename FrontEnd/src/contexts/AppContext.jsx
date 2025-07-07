@@ -67,6 +67,7 @@ export const AppProvider = ({ children }) => {
   // setIsLoading(true);
 
   try {
+    console.log(`${import.meta.env.VITE_API_BASE_URL}`)
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/verify/login`, {
       method: 'POST',
       headers: {

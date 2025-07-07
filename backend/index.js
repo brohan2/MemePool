@@ -22,7 +22,9 @@ app.get('/test',(req,res)=>{
         res.send("TEST")
 })
 await connectDB()
-
+app.get('/test',(req,res)=>{
+  res.send("TEST WORKING")
+})
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
