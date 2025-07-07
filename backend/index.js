@@ -18,7 +18,9 @@ app.use(cors());
 
 app.use('/api/meme', mrouter);
 app.use('/api/verify',urouter)
-
+app.get('/test',(req,res)=>{
+        res.send("TEST")
+})
 await connectDB()
 
   app.listen(PORT, () => {
