@@ -67,7 +67,7 @@ export const AppProvider = ({ children }) => {
   // setIsLoading(true);
 
   try {
-    console.log(`${import.meta.env.VITE_API_BASE_URL}`)
+    // console.log(`${import.meta.env.VITE_API_BASE_URL}`)
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/verify/login`, {
       method: 'POST',
       headers: {
@@ -77,10 +77,10 @@ export const AppProvider = ({ children }) => {
     });
 
     const data = await res.json();
-    console.log(data);
+    // console.log(data);
 
     if (!res.ok) {
-      console.log(data.error);
+      // console.log(data.error);
       // setIsLoading(false)
       return { success: false, message: data.error || 'Login failed' };
     }
@@ -205,7 +205,7 @@ const deleteMeme = async (memeId) => {
     if (res.ok) {
       // Frontend state update
       setMemes(prev => prev.filter(meme => meme.id !== memeId));
-      console.log(data.message); // optional: toast or alert
+      // console.log(data.message); // optional: toast or alert
     } else {
       console.error(data.error || data.Message);
       // Optional: toast.error(data.error || data.Message);
@@ -222,7 +222,7 @@ const deleteMeme = async (memeId) => {
 
     try {
       const token = localStorage.getItem('token');
-      console.log("Token being sent:", user.token);
+      // console.log("Token being sent:", user.token);
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/meme/likes/${memeId}`, {
         method: 'PUT',
         headers: {
