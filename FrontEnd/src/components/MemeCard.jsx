@@ -72,7 +72,7 @@ const LikeButton = memo(({
   </button>
 ));
 
-const MemeCard = ({ meme }) => {
+const MemeCard = ({ meme, hideLikeButton }) => {
   const { user, likeMeme, isDarkMode } = useAppContext();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [likeAnimation, setLikeAnimation] = useState(false);
@@ -239,15 +239,23 @@ const MemeCard = ({ meme }) => {
               </div>
             </div>
 
-            <LikeButton 
-              onClick={handleLike}
-              disabled={!user || isLiking}
-              hasLiked={hasLiked}
-              isLiking={isLiking}
-              likes={currentLikes}
-              isDarkMode={isDarkMode}
-              user={user}
-            />
+            {hideLikeButton ? (
+              <div className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center justify-center ${
+                isDarkMode ? 'bg-gray-700 text-purple-300' : 'bg-gray-100 text-blue-700'
+              }`}>
+                your meme
+              </div>
+            ) : (
+              <LikeButton 
+                onClick={handleLike}
+                disabled={!user || isLiking}
+                hasLiked={hasLiked}
+                isLiking={isLiking}
+                likes={currentLikes}
+                isDarkMode={isDarkMode}
+                user={user}
+              />
+            )}
           </div>
         </div>
       </div>

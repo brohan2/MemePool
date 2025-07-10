@@ -303,12 +303,8 @@ const deleteMeme = async (memeId) => {
         createdAt: meme.createdAt
       }));
 
-      // Filter out current user's memes from the feed
-      const filteredMemes = user 
-        ? processedMemes.filter(meme => meme.uploaderId !== user.id)
-        : processedMemes;
-
-      setMemes(filteredMemes);
+      // Do not filter out current user's memes
+      setMemes(processedMemes);
     } catch (err) {
       console.error('Failed to fetch memes:', err);
     }

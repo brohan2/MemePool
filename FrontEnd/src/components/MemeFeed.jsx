@@ -2,14 +2,14 @@ import React from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import MemeCard from './MemeCard';
 import { ImageIcon } from 'lucide-react';
+import TopMemeFeed from './TopMemeFeed'; 
 
 const MemeFeed = () => {
   const { memes, isDarkMode, user } = useAppContext();
 
-  // Filter out current user's memes from the feed (additional client-side filtering)
-  const feedMemes = user 
-    ? memes.filter(meme => meme.uploaderId !== user.id)
-    : memes;
+
+  // Show all memes, but pass a prop to MemeCard to hide like button for current user's memes
+  const feedMemes = memes;
 
   if (feedMemes.length === 0) {
     return (
@@ -20,7 +20,7 @@ const MemeFeed = () => {
         <h3 className="text-xl font-semibold mb-2">No memes to show!</h3>
         <p className="text-center max-w-md">
           {user 
-            ? "There are no memes from other users yet. Check back later or encourage others to share their memes!"
+            ? "There are no memes yet. Check back later or encourage others to share their memes!"
             : "Be the first to share a meme and get the fun started. Click the upload button to add your first meme!"
           }
         </p>
@@ -30,11 +30,16 @@ const MemeFeed = () => {
 
   return (
     <div className="space-y-8">
+    <TopMemeFeed />
 
       {/* Memes Grid - 3 columns, 40% screen height */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {feedMemes.map((meme) => (
-          <MemeCard key={meme._id || meme.id} meme={meme} />
+          <MemeCard 
+            key={meme._id || meme.id} 
+            meme={meme} 
+            hideLikeButton={user && meme.uploaderId === user.id}
+          />
         ))}
       </div>
 
