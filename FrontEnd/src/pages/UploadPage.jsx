@@ -1,63 +1,59 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import { Upload, Image as ImageIcon, Link, ArrowLeft } from 'lucide-react';
+import { Upload, Image as ImageIcon, ArrowLeft } from 'lucide-react';
 
 const UploadPage = () => {
   const { user, addMeme, isDarkMode } = useAppContext();
   const navigate = useNavigate();
   const [imageFile, setImageFile] = useState(null);
-  const [imageUrl, setImageUrl] = useState('');
   const [caption, setCaption] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
-  const [uploadMethod, setUploadMethod] = useState('file'); // 'file' or 'url'
   const previewRef = useRef(null);
 
-  const handleFileChange = (e) => {
+  // File input handler with validation
+  const handleFileChange = useCallback((e) => {
     const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreviewUrl(e.target.result);
-        setTimeout(() => {
-          previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100); // slight delay to ensure DOM update
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    // Validate file type and size (max 10MB)
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      alert('Only PNG, JPG, and GIF files are allowed.');
+      return;
     }
-  };
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size should be less than 10MB.');
+      return;
+    }
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreviewUrl(e.target.result);
+      setTimeout(() => {
+        previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    };
+    reader.readAsDataURL(file);
+  }, []);
 
-  const handleImageUrlChange = (url) => {
-    setImageUrl(url);
-    setPreviewUrl(url);
-    setTimeout(() => {
-      previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-  };
-
+  // Form submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if ((!imageFile && !imageUrl.trim()) || !user) return;
+    if (!imageFile || !user) return;
 
     setIsLoading(true);
+    setSuccessMessage('');
 
     const formData = new FormData();
-
-    if (uploadMethod === 'file' && imageFile) {
+    if (imageFile) {
       formData.append('memes', imageFile);
-    } else if (uploadMethod === 'url' && imageUrl) {
-      formData.append('imageUrl', imageUrl);
     }
-
     formData.append('caption', caption);
 
     try {
       const token = localStorage.getItem('token');
-
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/meme/upload`, {
         method: 'POST',
         headers: {
@@ -70,8 +66,6 @@ const UploadPage = () => {
 
       if (!res.ok) throw new Error(data.error || 'Upload failed');
       setSuccessMessage('🎉 Meme uploaded successfully! Check your Profile Section for your memes');
-
-      // Scroll to top so user sees the success message
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       addMeme({
@@ -80,13 +74,18 @@ const UploadPage = () => {
         uploader: user.username,
       });
 
-      // Wait 1.5 seconds before navigating
+      // Reset form after upload
+      setImageFile(null);
+      setCaption('');
+      setPreviewUrl('');
+
+      // Wait before navigating to feed
       setTimeout(() => {
         navigate('/feed');
-      }, 2500);
+      }, 2000);
     } catch (err) {
       console.error('Upload error:', err.message);
-      alert(err.message);
+      alert(err.message || 'Upload failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -107,14 +106,12 @@ const UploadPage = () => {
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Feed</span>
         </button>
-        
         <h1 className={`text-2xl font-bold transition-colors duration-500 ${
           isDarkMode ? 'text-white' : 'text-gray-800'
         }`}>
           Upload New Meme
         </h1>
-        
-        <div className="w-24"></div> {/* Spacer for centering */}
+        <div className="w-24"></div>
       </div>
 
       {/* Success Message */}
@@ -131,90 +128,41 @@ const UploadPage = () => {
           : 'bg-white/80 border border-gray-200'
       }`}>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Upload Method Toggle */}
-          {/* Remove the Upload File button */}
-          {/* <div className="flex space-x-2">
-            <button
-              type="button"
-              onClick={() => {
-                setUploadMethod('file');
-                setImageUrl('');
-                setPreviewUrl('');
-              }}
-              className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
-                uploadMethod === 'file'
-                  ? isDarkMode
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-blue-500 text-white'
-                  : isDarkMode
-                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <Upload className="w-5 h-5" />
-              <span>Upload File</span>
-            </button>
-          </div> */}
-
           {/* File Upload */}
-          {uploadMethod === 'file' && (
-            <div>
-              <label className={`block text-lg font-semibold mb-4 transition-colors duration-500 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                Choose Image File
-              </label>
-              <div className={`relative border-2 border-dashed rounded-xl p-12 transition-all duration-300 hover:border-opacity-80 ${
-                isDarkMode 
-                  ? 'border-gray-600 bg-gray-700/50 hover:border-purple-500' 
-                  : 'border-gray-300 bg-gray-50 hover:border-blue-500'
-              }`}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-                <div className="text-center">
-                  <ImageIcon className={`w-16 h-16 mx-auto mb-6 transition-colors duration-500 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`} />
-                  <p className={`text-lg font-medium mb-2 transition-colors duration-500 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}>
-                    {imageFile ? imageFile.name : 'Click to upload or drag and drop'}
-                  </p>
-                  <p className={`text-sm transition-colors duration-500 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    PNG, JPG, GIF up to 10MB
-                  </p>
-                </div>
+          <div>
+            <label className={`block text-lg font-semibold mb-4 transition-colors duration-500 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
+              Choose Image File
+            </label>
+            <div className={`relative border-2 border-dashed rounded-xl p-12 transition-all duration-300 hover:border-opacity-80 ${
+              isDarkMode 
+                ? 'border-gray-600 bg-gray-700/50 hover:border-purple-500' 
+                : 'border-gray-300 bg-gray-50 hover:border-blue-500'
+            }`}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <div className="text-center">
+                <ImageIcon className={`w-16 h-16 mx-auto mb-6 transition-colors duration-500 ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                }`} />
+                <p className={`text-lg font-medium mb-2 transition-colors duration-500 ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  {imageFile ? imageFile.name : 'Click to upload or drag and drop'}
+                </p>
+                <p className={`text-sm transition-colors duration-500 ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  PNG, JPG, GIF up to 10MB
+                </p>
               </div>
             </div>
-          )}
-
-          {/* URL Input */}
-          {uploadMethod === 'url' && (
-            <div>
-              <label className={`block text-lg font-semibold mb-4 transition-colors duration-500 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                Image URL
-              </label>
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => handleImageUrlChange(e.target.value)}
-                placeholder="https://example.com/meme.jpg"
-                className={`w-full px-4 py-4 rounded-xl border text-lg transition-all duration-300 focus:ring-2 focus:outline-none ${
-                  isDarkMode 
-                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500/20' 
-                    : 'bg-white border-gray-300 text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
-                }`}
-              />
-            </div>
-          )}
+          </div>
 
           {/* Image Preview & Caption Side by Side */}
           {previewUrl && (
@@ -280,7 +228,7 @@ const UploadPage = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading || (!imageFile && !imageUrl.trim())}
+            disabled={isLoading || !imageFile}
             className={`w-full py-4 px-6 rounded-xl font-semibold text-white text-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
               isDarkMode
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/30'
