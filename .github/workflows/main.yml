@@ -12,6 +12,7 @@ jobs:
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      Allowed_Origin : ${{ secrets.Allowed_Origin }}
     steps:
       - name: copying files
         uses: actions/checkout@v2
@@ -25,6 +26,7 @@ jobs:
           echo CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY >> ./backend/.env
           echo CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET >> ./backend/.env
           echo JWT_SECRET=$JWT_SECRET >> ./backend/.env
+          echo Allowed_Origin=$Allowed_Origin >> ./backend/.env
       - name: ssh into ec2
         uses: appleboy/scp-action@v1
         with:
