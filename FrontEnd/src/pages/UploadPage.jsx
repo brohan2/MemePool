@@ -193,7 +193,7 @@ const UploadPage = () => {
                   onChange={(e) => setCaption(e.target.value)}
                   placeholder="Add a funny caption..."
                   rows={8}
-                  className={`w-full px-4 py-4 rounded-xl border text-lg transition-all duration-300 focus:ring-2 focus:outline-none resize-none ${
+                  className={`w-full px-4 py-8 rounded-xl border text-lg transition-all duration-300 focus:ring-2 focus:outline-none resize-none ${
                     isDarkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500/20' 
                       : 'bg-white border-gray-300 text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
@@ -202,29 +202,6 @@ const UploadPage = () => {
               </div>
             </div>
           )}
-
-          {/* Hide the original Caption Input below */}
-          {!previewUrl && (
-            <div>
-              <label className={`block text-lg font-semibold mb-4 transition-colors duration-500 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                Caption 
-              </label>
-              <textarea
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder="Add a funny caption..."
-                rows={4}
-                className={`w-full px-4 py-4 rounded-xl border text-lg transition-all duration-300 focus:ring-2 focus:outline-none resize-none ${
-                  isDarkMode 
-                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500/20' 
-                    : 'bg-white border-gray-300 text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
-                }`}
-              />
-            </div>
-          )}
-
           {/* Submit Button */}
           <button
             type="submit"
