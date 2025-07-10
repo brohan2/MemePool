@@ -1,4 +1,4 @@
-import mememodel from "../models/MemeModel"
+import mememodel from "../models/MemeModel.js"
 
 const deleteMeme = async (req,res)=>{
     try{
