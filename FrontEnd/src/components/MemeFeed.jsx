@@ -34,11 +34,7 @@ const MemeFeed = () => {
       {/* Memes Grid - 3 columns, 40% screen height */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {feedMemes.map((meme) => (
-          <div
-            key={meme._id || meme.id}
-          >
-            <MemeCard meme={meme} />
-          </div>
+          <MemeCard key={meme._id || meme.id} meme={meme} />
         ))}
       </div>
 

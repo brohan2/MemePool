@@ -7,7 +7,7 @@ const FeedPage = () => {
 
   useEffect(() => {
     fetchMemes();
-  }, []);
+  }, []); // Add fetchMemes to dependency array
 
   return <MemeFeed />;
 };
