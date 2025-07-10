@@ -95,7 +95,7 @@ const MemeCard = ({ meme }) => {
     } else {
       setHasLiked(false);
     }
-  }, [user, meme.likesArray]);
+  }, [user, meme.likesArray] );
 
   // Check if caption is truncated
   useEffect(() => {
@@ -160,7 +160,7 @@ const MemeCard = ({ meme }) => {
       console.error('Failed to update like. Please try again.');
     } finally {
       setIsLiking(false);
-      setTimeout(() => setLikeAnimation(false), 600);
+      setTimeout(() => setLikeAnimation(false));
     }
   }, [user, isLiking, currentLikes, hasLiked, likeMeme, meme._id]);
 
