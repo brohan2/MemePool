@@ -16,7 +16,6 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [memes, setMemes] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
   // Initialize theme and check for existing session
@@ -283,13 +282,6 @@ const deleteMeme = async (memeId) => {
     }
   };
 
-
-  const getUserMemes = (userId) => {
-    // For profile page, we need to fetch user's own memes separately
-    // This function will be used in ProfilePage to show user's own memes
-    return memes.filter(meme => meme.uploaderId === userId);
-  };
-
   const fetchMemes = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -368,7 +360,6 @@ const deleteMeme = async (memeId) => {
       login,
       signup,
       logout,
-      getUserMemes,
       fetchMemes,
       fetchUserMemes
     }}>

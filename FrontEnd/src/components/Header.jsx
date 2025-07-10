@@ -130,7 +130,7 @@ const Header = () => {
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      <Settings className="w-4 h-4" />
+                      <User className="w-4 h-4 text-white" />
                       <span>My Profile</span>
                     </Link>
                     <button

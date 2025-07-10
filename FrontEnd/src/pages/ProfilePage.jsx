@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { Edit3, Trash2, Calendar, Heart, ImageIcon, User } from 'lucide-react';
-import EditMemeModal from '../components/EditMemeModel';
 
 const ProfilePage = () => {
   const { user, deleteMeme, isDarkMode, fetchUserMemes } = useAppContext();
@@ -193,15 +192,6 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
-
-      {/* Edit Meme Modal */}
-      {editingMeme && (
-        <EditMemeModal
-          meme={editingMeme}
-          isOpen={!!editingMeme}
-          onClose={() => setEditingMeme(null)}
-        />
-      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
