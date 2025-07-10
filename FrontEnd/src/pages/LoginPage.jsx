@@ -12,6 +12,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [localLoading, setLocalLoading] = useState(false);
+  const [showForgotPopup, setShowForgotPopup] = useState(false);
 
   const from = location.state?.from?.pathname || '/feed';
 
@@ -208,9 +209,45 @@ const LoginPage = () => {
                 Sign up
               </Link>
             </p>
+            <button
+              type="button"
+              onClick={() => setShowForgotPopup(true)}
+              className={`mt-4 underline text-sm ${
+                isDarkMode ? 'text-purple-300 hover:text-white' : 'text-blue-600 hover:text-blue-800'
+              }`}
+            >
+              Forgot Password?
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Forgot Password Popup */}
+      {showForgotPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+          <div
+            className={`w-[45vw] h-[60vh] bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center justify-center relative`}
+          >
+            <button
+              className="absolute top-4 right-6 text-gray-400 hover:text-gray-700 dark:hover:text-white text-3xl"
+              onClick={() => setShowForgotPopup(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <img
+              src="forgot.jpg"
+              alt="Forgot Password"
+              className="object-contain w-full h-full rounded-xl"
+              style={{ maxHeight: '100%', maxWidth: '100%' }}
+            />
+            {/* <h2 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}></h2> */}
+            {/* <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-center`}>
+              Please contact support or check your email for password reset instructions.
+            </p> */}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
