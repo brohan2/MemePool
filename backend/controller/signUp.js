@@ -26,6 +26,7 @@ const signUp = async (req, res) => {
     const verifyUser = signUpValidation.safeParse({ username, email, password, confirmpassword });
 
     if (!verifyUser.success) {
+      console.log(verifyUser.error.flatten())
       return res.status(403).json({
         message: verifyUser.error.flatten(),
         errors: verifyUser.error.flatten()
@@ -75,3 +76,7 @@ const signUp = async (req, res) => {
 };
 
 export default signUp
+
+
+
+

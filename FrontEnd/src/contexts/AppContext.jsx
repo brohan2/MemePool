@@ -128,7 +128,8 @@ export const AppProvider = ({ children }) => {
     const data = await res.json();
 
     if (!res.ok) {
-      return { success: false, message: data.error || 'Signup failed' };
+      console.log(data)
+      return { success: false, message: data || 'Signup failed' };
     }
 
     const token = data.token;
