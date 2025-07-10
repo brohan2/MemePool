@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import Smile from 'lucide-react/dist/esm/icons/smile';
-import Mail from 'lucide-react/dist/esm/icons/mail';
-import User from 'lucide-react/dist/esm/icons/user';
-import Lock from 'lucide-react/dist/esm/icons/lock';
-import Eye from 'lucide-react/dist/esm/icons/eye';
-import EyeOff from 'lucide-react/dist/esm/icons/eye-off';
-import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
-import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
+import {
+  Smile,
+  Mail,
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  ArrowLeft
+} from 'lucide-react';
 
 const SignupPage = () => {
   const { signup, isDarkMode } = useAppContext();
