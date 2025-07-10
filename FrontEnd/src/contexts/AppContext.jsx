@@ -17,8 +17,6 @@ export const AppProvider = ({ children }) => {
   const [memes, setMemes] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasMoreMemes, setHasMoreMemes] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Initialize theme and check for existing session
@@ -354,16 +352,6 @@ const deleteMeme = async (memeId) => {
     }
   };
 
-  const loadMoreMemes = async () => {
-    if (isLoadingMore || !hasMoreMemes) return;
-    
-    const nextPage = currentPage + 1;
-    const { memes: newMemes, hasMore } = await fetchMemes(nextPage);
-    
-    setMemes(prev => [...prev, ...newMemes]);
-    setCurrentPage(nextPage);
-    setHasMoreMemes(hasMore);
-  };
 
   return (
     <AppContext.Provider value={{
@@ -377,9 +365,6 @@ const deleteMeme = async (memeId) => {
       likeMeme,
       isDarkMode,
       toggleTheme,
-      loadMoreMemes,
-      hasMoreMemes,
-      isLoadingMore,
       login,
       signup,
       logout,
