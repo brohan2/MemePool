@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import { Smile, Upload, Moon, Sun, User, LogOut, Settings, Home } from 'lucide-react';
+import { Smile, Upload, Moon, Sun, User, LogOut, Home } from 'lucide-react';
 
 const Header = () => {
   const { user, isDarkMode, toggleTheme, logout } = useAppContext();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        menuRef.current && 
+        !menuRef.current.contains(event.target) &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -44,25 +63,7 @@ const Header = () => {
             </div>
           </Link>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center space-x-4">
-            <Link
-              to="/feed"
-              className={`flex items-center space-x-2 px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 ${
-                location.pathname === '/feed'
-                  ? isDarkMode 
-                    ? 'bg-purple-600 text-white' 
-                    : 'bg-blue-500 text-white'
-                  : isDarkMode 
-                    ? 'text-gray-300 hover:bg-gray-800 hover:text-white' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
-              }`}
-            >
-              <Home className="w-4 h-4" />
-              <span>Feed</span>
-            </Link>
-          </nav>
-
+          
           {/* User Info & Actions */}
           <div className="flex items-center space-x-4">
             {/* Theme Toggle */}
@@ -94,6 +95,7 @@ const Header = () => {
             {/* User Profile Dropdown */}
             <div className="relative">
               <button
+                ref={buttonRef}
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-300 hover:scale-105 ${
                   isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'
@@ -115,11 +117,14 @@ const Header = () => {
 
               {/* Dropdown Menu */}
               {showUserMenu && (
-                <div className={`absolute right-0 mt-2 w-48 rounded-xl shadow-lg border transition-all duration-300 ${
-                  isDarkMode 
-                    ? 'bg-gray-800 border-gray-700' 
-                    : 'bg-white border-gray-200'
-                }`}>
+                <div 
+                  ref={menuRef}
+                  className={`absolute right-0 mt-2 w-48 rounded-xl shadow-lg border transition-all duration-300 ${
+                    isDarkMode 
+                      ? 'bg-gray-800 border-gray-700' 
+                      : 'bg-white border-gray-200'
+                  }`}
+                >
                   <div className="py-2">
                     <Link
                       to="/profile"
@@ -130,7 +135,7 @@ const Header = () => {
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      <User className="w-4 h-4 text-white" />
+                      <User className="w-4 h-4" />
                       <span>My Profile</span>
                     </Link>
                     <button

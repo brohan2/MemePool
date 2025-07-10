@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import { Smile, Mail, Lock, Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Smile, Mail, Lock, Eye, EyeOff, AlertCircle, ArrowLeft, X } from 'lucide-react';
 
 const LoginPage = () => {
   const { login, isDarkMode } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
+  const popupRef = useRef(null);
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -16,9 +17,35 @@ const LoginPage = () => {
 
   const from = location.state?.from?.pathname || '/feed';
 
+  // Handle ESC key and outside clicks for popup
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape' && showForgotPopup) {
+        setShowForgotPopup(false);
+      }
+    };
+
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setShowForgotPopup(false);
+      }
+    };
+
+    if (showForgotPopup) {
+      document.addEventListener('keydown', handleEscKey);
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showForgotPopup]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setError(''); // Clear error when input changes
   };
 
   const validateForm = () => {
@@ -45,7 +72,6 @@ const LoginPage = () => {
     try {
       setLocalLoading(true);
       const { success, message } = await login(formData.email, formData.password);
-      setLocalLoading(false);
       if (success) {
         navigate(from, { replace: true });
       } else {
@@ -53,6 +79,8 @@ const LoginPage = () => {
       }
     } catch {
       setError('Something went wrong. Please try again.');
+    } finally {
+      setLocalLoading(false);
     }
   };
 
@@ -72,13 +100,12 @@ const LoginPage = () => {
         } blur-3xl animate-pulse`}></div>
       </div>
 
-      {/* Container */}
+      {/* Main Container */}
       <div className={`relative z-10 flex flex-col md:flex-row items-center max-w-5xl w-full mx-4 p-4 md:p-8 rounded-2xl backdrop-blur-xl border transition-all duration-500 ${
         isDarkMode
           ? 'bg-gray-800/80 border-gray-700 shadow-2xl shadow-purple-500/20'
           : 'bg-white/80 border-white/50 shadow-2xl shadow-blue-500/20'
       }`}>
-
         {/* Left-side image */}
         <div className="hidden md:block md:w-1/2 p-8">
           <img
@@ -89,7 +116,7 @@ const LoginPage = () => {
         </div>
 
         {/* Right-side form */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-1/2 p-6">
           <Link 
             to="/"
             className={`inline-flex items-center space-x-2 mb-6 text-sm font-medium transition-all duration-300 hover:scale-105 ${
@@ -122,7 +149,7 @@ const LoginPage = () => {
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-100 border border-red-300 text-red-700 rounded">
+            <div className="mb-6 p-4 bg-red-100 border border-red-300 text-red-700 rounded-xl">
               <AlertCircle className="w-5 h-5 inline mr-2" />
               {error}
             </div>
@@ -226,14 +253,21 @@ const LoginPage = () => {
       {showForgotPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
           <div
-            className={`w-[45vw] h-[60vh] bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center justify-center relative`}
+            ref={popupRef}
+            className={`w-[45vw] h-[60vh] bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center justify-center relative ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}
           >
             <button
-              className="absolute top-4 right-6 text-gray-400 hover:text-gray-700 dark:hover:text-white text-3xl"
+              className={`absolute top-4 right-4 p-2 rounded-full transition-colors ${
+                isDarkMode 
+                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+              }`}
               onClick={() => setShowForgotPopup(false)}
               aria-label="Close"
             >
-              ×
+              <X className="w-5 h-5" />
             </button>
             <img
               src="forgot.jpg"
@@ -241,10 +275,6 @@ const LoginPage = () => {
               className="object-contain w-full h-full rounded-xl"
               style={{ maxHeight: '100%', maxWidth: '100%' }}
             />
-            {/* <h2 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}></h2> */}
-            {/* <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-center`}>
-              Please contact support or check your email for password reset instructions.
-            </p> */}
           </div>
         </div>
       )}
