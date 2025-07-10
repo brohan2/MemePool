@@ -8,9 +8,9 @@ jobs:
       VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }} 
       PORT: ${{ secrets.PORT }}
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
-      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      IMAGEKIT_PUBLIC_KEY: ${{ secrets.IMAGEKIT_PUBLIC_KEY }}
+      IMAGEKIT_PRIVATE_KEY: ${{ secrets.IMAGEKIT_PRIVATE_KEY }}
+      IMAGEKIT_URL_ENDPOINT: ${{ secrets.IMAGEKIT_URL_ENDPOINT }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       Allowed_Origin : ${{ secrets.Allowed_Origin }}
     steps:
@@ -22,9 +22,9 @@ jobs:
           
           echo PORT=$PORT > ./backend/.env
           echo MONGODB_URI=$MONGODB_URI >> ./backend/.env
-          echo CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME >> ./backend/.env
-          echo CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY >> ./backend/.env
-          echo CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET >> ./backend/.env
+          echo IMAGEKIT_PUBLIC_KEY=$IMAGEKIT_PUBLIC_KEY >> ./backend/.env
+          echo IMAGEKIT_PRIVATE_KEY=$IMAGEKIT_PRIVATE_KEY >> ./backend/.env
+          echo IMAGEKIT_URL_ENDPOINT=$IMAGEKIT_URL_ENDPOINT >> ./backend/.env
           echo JWT_SECRET=$JWT_SECRET >> ./backend/.env
           echo Allowed_Origin=$Allowed_Origin >> ./backend/.env
       - name: ssh into ec2
@@ -44,5 +44,3 @@ jobs:
            script: |
              cd /home/ubuntu/MemePool
              docker-compose up  -d
-      
-        
