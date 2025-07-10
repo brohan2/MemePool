@@ -16,13 +16,15 @@ const uploadMeme = async (req, res) => {
     }
 
     const imageUrls = req.files.map(file => file.path); // Cloudinary URLs
-
+    if(!imageUrls || imageUrls.length === 0) {
+      return res.status(400).json({ error: 'No valid image URLs found' });
+    }
     const newMeme = new Meme({
       author:id,
       meme: imageUrls,
       caption:ucaption
     });
-
+    
     await newMeme.save();
 
     return res.status(201).json({
