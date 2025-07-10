@@ -27,7 +27,6 @@ const MemeFeed = () => {
       </div>
     );
   }
-  console.log(feedMemes)
 
   return (
     <div className="space-y-8">
