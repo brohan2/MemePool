@@ -128,7 +128,41 @@ export const AppProvider = ({ children }) => {
     const data = await res.json();
 
     if (!res.ok) {
-      return { success: false, message: data.error || 'Signup failed' };
+      // Extract and format error messages from backend response
+      let errorMsg = 'Signup failed';
+      // Check for Zod error structure in both message and errors fields
+      const extractZodErrors = (obj) => {
+        if (!obj) return [];
+        let errors = [];
+        if (obj.formErrors && Array.isArray(obj.formErrors)) {
+          errors = errors.concat(obj.formErrors);
+        }
+        if (obj.fieldErrors && typeof obj.fieldErrors === 'object') {
+          errors = errors.concat(
+            Object.values(obj.fieldErrors).flat()
+          );
+        }
+        return errors;
+      };
+
+      let allErrors = [];
+      if (data && typeof data.message === 'object') {
+        allErrors = allErrors.concat(extractZodErrors(data.message));
+      }
+      if (data && typeof data.errors === 'object') {
+        allErrors = allErrors.concat(extractZodErrors(data.errors));
+      }
+      // Remove duplicates
+      allErrors = [...new Set(allErrors)];
+      if (allErrors.length > 0) {
+        errorMsg = allErrors.join(' | ');
+      } else if (data && typeof data.message === 'string') {
+        errorMsg = data.message;
+      } else if (data && data.error) {
+        errorMsg = data.error;
+      }
+      console.log('Signup error:', errorMsg);
+      return { success: false, message: errorMsg };
     }
 
     const token = data.token;
