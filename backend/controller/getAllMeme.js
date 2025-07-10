@@ -1,5 +1,5 @@
 // import usermodel from "../models/User"
-import mememodel from '../models/MemeModel'
+import mememodel from '../models/MemeModel.js'
 const getAllMeme = async (req, res) => {
   try {
     const user = req.user;

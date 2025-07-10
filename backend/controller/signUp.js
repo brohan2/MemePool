@@ -1,5 +1,5 @@
 import z from 'zod'
-import usermodel from '../models/User'
+import usermodel from '../models/User.js'
 import { email } from 'zod/v4'
 import { password } from 'bun'
 import bcrypt from 'bcrypt'

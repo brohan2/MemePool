@@ -1,7 +1,7 @@
 import z from 'zod'
 import jwt from 'jsonwebtoken'
 import { password } from 'bun'
-import usermodel from '../models/User'
+import usermodel from '../models/User.js'
 import bcrypt from 'bcrypt'
 
 const loginValidate = z.object({

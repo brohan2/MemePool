@@ -27,7 +27,7 @@ const ProfilePage = () => {
     };
 
     loadUserMemes();
-  }, [user?.id, fetchUserMemes]);
+  }, []);
 
   const handleDeleteMeme = (memeId) => {
     // Remove from local state
