@@ -14,7 +14,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(cors());
+
+// Handle multiple allowed origins from comma-separated env variable
+const allowedOrigins = process.env.Allowed_Origin
+  ? process.env.Allowed_Origin.split(',').map(origin => origin.trim())
+  : [];
+
+console.log(allowedOrigins)
+app.use(cors({
+  origin: allowedOrigins,
+}));
 
 app.use('/api/meme', mrouter);
 app.use('/api/verify',urouter)
