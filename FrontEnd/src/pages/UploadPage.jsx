@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
 import { Upload, Image as ImageIcon, Link, ArrowLeft } from 'lucide-react';
@@ -9,9 +9,11 @@ const UploadPage = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imageUrl, setImageUrl] = useState('');
   const [caption, setCaption] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
   const [uploadMethod, setUploadMethod] = useState('file'); // 'file' or 'url'
+  const previewRef = useRef(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -20,6 +22,9 @@ const UploadPage = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         setPreviewUrl(e.target.result);
+        setTimeout(() => {
+          previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100); // slight delay to ensure DOM update
       };
       reader.readAsDataURL(file);
     }
@@ -28,6 +33,9 @@ const UploadPage = () => {
   const handleImageUrlChange = (url) => {
     setImageUrl(url);
     setPreviewUrl(url);
+    setTimeout(() => {
+      previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   const handleSubmit = async (e) => {
@@ -40,9 +48,9 @@ const UploadPage = () => {
     const formData = new FormData();
 
     if (uploadMethod === 'file' && imageFile) {
-      formData.append('memes', imageFile); // 'memes' should match the multer field name
+      formData.append('memes', imageFile);
     } else if (uploadMethod === 'url' && imageUrl) {
-      formData.append('imageUrl', imageUrl); // optional if backend supports direct URL upload
+      formData.append('imageUrl', imageUrl);
     }
 
     formData.append('caption', caption);
@@ -53,7 +61,7 @@ const UploadPage = () => {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/meme/upload`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`, // JWT auth header
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -61,16 +69,21 @@ const UploadPage = () => {
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || 'Upload failed');
+      setSuccessMessage('🎉 Meme uploaded successfully! Check your Profile Section for your memes');
 
-      // Optional: add to global state
+      // Scroll to top so user sees the success message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       addMeme({
         imageUrl: data.data?.meme?.[0],
         caption: data.data?.caption,
         uploader: user.username,
       });
 
-      // Navigate back to feed
-      navigate('/feed');
+      // Wait 1.5 seconds before navigating
+      setTimeout(() => {
+        navigate('/feed');
+      }, 2500);
     } catch (err) {
       console.error('Upload error:', err.message);
       alert(err.message);
@@ -104,6 +117,13 @@ const UploadPage = () => {
         <div className="w-24"></div> {/* Spacer for centering */}
       </div>
 
+      {/* Success Message */}
+      {successMessage && (
+        <div className="mb-6 p-4 rounded-xl text-center font-semibold text-green-700 bg-green-100 border border-green-300 transition-all duration-500">
+          {successMessage}
+        </div>
+      )}
+
       {/* Upload Form */}
       <div className={`rounded-2xl p-8 transition-all duration-500 ${
         isDarkMode 
@@ -112,7 +132,8 @@ const UploadPage = () => {
       }`}>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Upload Method Toggle */}
-          <div className="flex space-x-2">
+          {/* Remove the Upload File button */}
+          {/* <div className="flex space-x-2">
             <button
               type="button"
               onClick={() => {
@@ -133,27 +154,7 @@ const UploadPage = () => {
               <Upload className="w-5 h-5" />
               <span>Upload File</span>
             </button>
-            {/* <button
-              type="button"
-              onClick={() => {
-                setUploadMethod('url');
-                setImageFile(null);
-                setPreviewUrl('');
-              }}
-              className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
-                uploadMethod === 'url'
-                  ? isDarkMode
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-blue-500 text-white'
-                  : isDarkMode
-                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <Link className="w-5 h-5" />
-              <span>Image URL</span>
-            </button> */}
-          </div>
+          </div> */}
 
           {/* File Upload */}
           {uploadMethod === 'file' && (
@@ -215,44 +216,66 @@ const UploadPage = () => {
             </div>
           )}
 
-          {/* Image Preview */}
+          {/* Image Preview & Caption Side by Side */}
           {previewUrl && (
-            <div>
-              <label className={`block text-lg font-semibold mb-4 transition-colors duration-500 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                Preview
-              </label>
-              <div className="relative aspect-square bg-gray-200 dark:bg-gray-700 rounded-xl overflow-hidden max-w-md mx-auto">
-                <img
-                  src={previewUrl}
-                  alt="Preview"
-                  className="w-full h-full object-contain"
-                  onError={() => setPreviewUrl('')}
+            <div ref={previewRef} className="flex flex-row gap-6 items-start">
+              <div className="flex-1">
+                <label className={`block text-lg font-semibold mb-4 transition-colors duration-500 ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  Preview
+                </label>
+                <div className="relative aspect-square bg-gray-200 dark:bg-gray-700 rounded-xl overflow-hidden max-w-md mx-auto">
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="w-full h-full object-contain"
+                    onError={() => setPreviewUrl('')}
+                  />
+                </div>
+              </div>
+              <div className="flex-1">
+                <label className={`block text-lg font-semibold mb-4 transition-colors duration-500 ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  Caption 
+                </label>
+                <textarea
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  placeholder="Add a funny caption..."
+                  rows={8}
+                  className={`w-full px-4 py-4 rounded-xl border text-lg transition-all duration-300 focus:ring-2 focus:outline-none resize-none ${
+                    isDarkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500/20' 
+                      : 'bg-white border-gray-300 text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
+                  }`}
                 />
               </div>
             </div>
           )}
 
-          {/* Caption Input */}
-          <div>
-            <label className={`block text-lg font-semibold mb-4 transition-colors duration-500 ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              Caption 
-            </label>
-            <textarea
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              placeholder="Add a funny caption..."
-              rows={4}
-              className={`w-full px-4 py-4 rounded-xl border text-lg transition-all duration-300 focus:ring-2 focus:outline-none resize-none ${
-                isDarkMode 
-                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500/20' 
-                  : 'bg-white border-gray-300 text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
-              }`}
-            />
-          </div>
+          {/* Hide the original Caption Input below */}
+          {!previewUrl && (
+            <div>
+              <label className={`block text-lg font-semibold mb-4 transition-colors duration-500 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                Caption 
+              </label>
+              <textarea
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                placeholder="Add a funny caption..."
+                rows={4}
+                className={`w-full px-4 py-4 rounded-xl border text-lg transition-all duration-300 focus:ring-2 focus:outline-none resize-none ${
+                  isDarkMode 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500/20' 
+                    : 'bg-white border-gray-300 text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
+                }`}
+              />
+            </div>
+          )}
 
           {/* Submit Button */}
           <button
