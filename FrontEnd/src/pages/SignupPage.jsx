@@ -78,7 +78,7 @@ const SignupPage = () => {
       if (success) {
         navigate('/feed');
       } else {
-        setError(error || 'Signup failed');
+        setError(message || 'Signup failed');
       }
     } catch (err) {
       setLocalLoading(false);
