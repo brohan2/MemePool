@@ -25,8 +25,13 @@ const TopMemeFeed = () => {
           const isOwnMeme = user && meme.uploaderId === user.id;
           return (
             <div key={meme._id || meme.id} className="relative flex-1 flex flex-col items-center max-w-xs md:mx-2 mb-3 md:mb-0">
+              <div className={`absolute -top-2 left-1/2 -translate-x-1/2 w-6 h-6 flex items-center justify-center rounded-full font-bold text-xs z-10 shadow-md animate-bounce cursor-pointer ${
+                    idx === 0 ? 'bg-yellow-400/90 text-yellow-900' : idx === 1 ? 'bg-gray-300/90 text-gray-800' : 'bg-orange-400/90 text-orange-900'
+                  }`}>
+                    {idx + 1}
+              </div>
               {/* Eye-catching glow for top memes */}
-              <div className={`w-full relative`}>
+              <div className={`w-full relative pt-6`}>
                 <div
                   className={`rounded-lg ${
                     idx === 0 ? 'ring-4 ring-yellow-300/60' : idx === 1 ? 'ring-2 ring-gray-300/50' : 'ring-2 ring-orange-300/50'
@@ -43,12 +48,6 @@ const TopMemeFeed = () => {
                   }}
                 >
                   <MemeCard meme={meme} hideLikeButton={isOwnMeme} />
-                  {/* Rank badge inside the card at top right */}
-                  <div className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm z-20 shadow-lg backdrop-blur-sm cursor-pointer ${
-                    idx === 0 ? 'bg-yellow-400/90 text-yellow-900' : idx === 1 ? 'bg-gray-300/90 text-gray-800' : 'bg-orange-400/90 text-orange-900'
-                  }`}>
-                    {idx + 1}
-                  </div>
                 </div>
               </div>
             </div>
