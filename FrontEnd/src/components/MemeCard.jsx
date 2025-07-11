@@ -170,7 +170,7 @@ const MemeCard = ({ meme, hideLikeButton }) => {
       console.error('Failed to update like. Please try again.');
     } finally {
       setIsLiking(false);
-      setTimeout(() => setLikeAnimation(false), 1000);
+      setTimeout(() => setLikeAnimation(false));
     }
   }, [user, isLiking, localLikes, localHasLiked, likeMeme, meme._id, updateMemeInState]);
 
