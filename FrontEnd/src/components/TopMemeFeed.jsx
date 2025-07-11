@@ -19,8 +19,8 @@ const TopMemeFeed = () => {
 
   return (
     <div className={`rounded-lg p-2 mb-4 shadow-md ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
-      <h2 className={`text-sm font-semibold mb-2 text-center tracking-wide ${isDarkMode ? 'text-purple-300' : 'text-blue-700'}`}>Top Memes</h2>
-      <div className={`flex flex-col md:flex-row gap-4 justify-center items-stretch rounded-xl ${isDarkMode ? 'bg-gray-900/80' : 'bg-blue-100'} pb-6 pt-2`}>
+      <h2 className={`text-m font-semibold mb-2 text-center tracking-wide ${isDarkMode ? 'text-purple-300' : 'text-blue-700'}`}>Top Memes</h2>
+      <div className={`flex flex-col md:flex-row gap-7 justify-center items-stretch rounded-xl ${isDarkMode ? 'bg-gray-900/80' : 'bg-blue-200'} pb-6 pt-6`}>
         {sortedTopMemes.map((meme, idx) => {
           const isOwnMeme = user && meme.uploaderId === user.id;
           return (
@@ -36,9 +36,9 @@ const TopMemeFeed = () => {
                       idx === 0
                         ? '0 0 26px 4px #ffdb28'
                         : idx === 1
-                        ? '0 0 20px 2px #dee4ed'
+                        ? '0 0 26px 2px #ffffff'
                         : idx === 2
-                        ? '0 0 20px 2px #ffb567'
+                        ? '0 0 26px 2px #ffb567'
                         : undefined
                   }}
                 >
