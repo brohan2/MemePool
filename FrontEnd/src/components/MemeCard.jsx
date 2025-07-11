@@ -83,6 +83,9 @@ const MemeCard = ({ meme, hideLikeButton }) => {
   const captionRef = useRef(null);
   const modalRef = useRef(null);
 
+  // Check if this is the current user's meme
+  const isOwnMeme = user && meme.uploaderId === user.id;
+
   // Determine if current user has already liked
   const [hasLiked, setHasLiked] = useState(() =>
     user && meme.likesArray ? meme.likesArray.some(likedUser => likedUser._id === user.id) : false
@@ -240,10 +243,10 @@ const MemeCard = ({ meme, hideLikeButton }) => {
             </div>
 
             {hideLikeButton ? (
-              <div className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center justify-center ${
+              <div className={`px-1.5 py-1 rounded-md text-xs font-semibold flex items-center justify-center ${
                 isDarkMode ? 'bg-gray-700 text-purple-300' : 'bg-gray-100 text-blue-700'
               }`}>
-                your meme
+                my meme
               </div>
             ) : (
               <LikeButton 
@@ -308,15 +311,24 @@ const MemeCard = ({ meme, hideLikeButton }) => {
                     </div>
                   </div>
 
-                  <LikeButton 
-                    onClick={handleLike}
-                    disabled={!user || isLiking}
-                    hasLiked={hasLiked}
-                    isLiking={isLiking}
-                    likes={currentLikes}
-                    isDarkMode={isDarkMode}
-                    user={user}
-                  />
+                  {/* Show "my meme" badge in modal if it's user's own meme */}
+                  {isOwnMeme ? (
+                    <div className={`px-2.5 py-1 rounded-md text-sm font-semibold flex items-center justify-center ${
+                      isDarkMode ? 'bg-gray-700 text-purple-300' : 'bg-gray-100 text-blue-700'
+                    }`}>
+                      my meme
+                    </div>
+                  ) : (
+                    <LikeButton 
+                      onClick={handleLike}
+                      disabled={!user || isLiking}
+                      hasLiked={hasLiked}
+                      isLiking={isLiking}
+                      likes={currentLikes}
+                      isDarkMode={isDarkMode}
+                      user={user}
+                    />
+                  )}
                 </div>
 
                 <p className={`text-base leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>

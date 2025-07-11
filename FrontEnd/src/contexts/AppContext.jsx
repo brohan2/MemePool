@@ -248,12 +248,11 @@ const deleteMeme = async (memeId) => {
 };
 
 
-    const likeMeme = async (memeId) => {
+  const likeMeme = async (memeId) => {
     if (!user) return;
 
     try {
       const token = localStorage.getItem('token');
-      // console.log("Token being sent:", user.token);
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/meme/likes/${memeId}`, {
         method: 'PUT',
         headers: {
@@ -265,7 +264,7 @@ const deleteMeme = async (memeId) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to like/unlike meme');
 
-      // Update likes count in state
+      // Update both likes count and likesArray in state
       setMemes(prev =>
         prev.map(meme =>
           meme._id === memeId
