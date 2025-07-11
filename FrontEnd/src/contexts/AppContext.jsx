@@ -247,6 +247,20 @@ const deleteMeme = async (memeId) => {
   }
 };
 
+  const updateMemeInState = (memeId, updatedLikes, hasLiked) => {
+    setMemes(prevMemes => 
+      prevMemes.map(meme => 
+        meme._id === memeId ? {
+          ...meme,
+          likes: updatedLikes,
+          likesArray: hasLiked 
+            ? [...(meme.likesArray || []), { _id: user.id }]
+            : (meme.likesArray || []).filter(like => like._id !== user.id)
+        } : meme
+      )
+    );
+  };
+
 
   const likeMeme = async (memeId) => {
     if (!user) return;
@@ -264,20 +278,13 @@ const deleteMeme = async (memeId) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to like/unlike meme');
 
-      // Update both likes count and likesArray in state
-      setMemes(prev =>
-        prev.map(meme =>
-          meme._id === memeId
-            ? { ...meme, likes: data.totalLikes }
-            : meme
-        )
-      );
+       updateMemeInState(memeId, data.totalLikes, !data.isUnliked);
 
       // Return the updated likes count for optimistic updates
       return data.totalLikes;
     } catch (err) {
       console.error("Like/unlike failed:", err.message);
-      throw err; // Re-throw to handle in component
+      throw err;
     }
   };
 
@@ -350,6 +357,7 @@ const deleteMeme = async (memeId) => {
       updateMeme,
       deleteMeme,
       likeMeme,
+      updateMemeInState,
       isDarkMode,
       toggleTheme,
       login,

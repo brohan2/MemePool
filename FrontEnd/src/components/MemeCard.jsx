@@ -73,11 +73,14 @@ const LikeButton = memo(({
 ));
 
 const MemeCard = ({ meme, hideLikeButton }) => {
-  const { user, likeMeme, isDarkMode } = useAppContext();
+  const { user, likeMeme, isDarkMode, updateMemeInState } = useAppContext();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [likeAnimation, setLikeAnimation] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
-  const [currentLikes, setCurrentLikes] = useState(meme.likes || 0);
+  const [localLikes, setLocalLikes] = useState(meme.likes || 0);
+  const [localHasLiked, setLocalHasLiked] = useState(() =>
+    user && meme.likesArray ? meme.likesArray.some(likedUser => likedUser._id === user.id) : false
+  );
   const [showModal, setShowModal] = useState(false);
   const [captionTruncated, setCaptionTruncated] = useState(false);
   const captionRef = useRef(null);
@@ -86,19 +89,15 @@ const MemeCard = ({ meme, hideLikeButton }) => {
   // Check if this is the current user's meme
   const isOwnMeme = user && meme.uploaderId === user.id;
 
-  // Determine if current user has already liked
-  const [hasLiked, setHasLiked] = useState(() =>
-    user && meme.likesArray ? meme.likesArray.some(likedUser => likedUser._id === user.id) : false
-  );
-
-  // Update hasLiked when user or meme changes
+  // Update local state when meme data changes
   useEffect(() => {
-    if (user && meme.likesArray) {
-      setHasLiked(meme.likesArray.some(likedUser => likedUser._id === user.id));
-    } else {
-      setHasLiked(false);
-    }
-  }, [user, meme.likesArray] );
+    setLocalLikes(meme.likes || 0);
+    setLocalHasLiked(
+      user && meme.likesArray 
+        ? meme.likesArray.some(likedUser => likedUser._id === user.id) 
+        : false
+    );
+  }, [meme.likes, meme.likesArray, user]);
 
   // Check if caption is truncated
   useEffect(() => {
@@ -133,39 +132,47 @@ const MemeCard = ({ meme, hideLikeButton }) => {
     };
   }, [showModal]);
 
-  // Memoized handlers
   const handleLike = useCallback(async () => {
     if (!user || isLiking) return;
 
     setIsLiking(true);
     setLikeAnimation(true);
 
-    const originalLikes = currentLikes;
-    const originalLiked = hasLiked;
+    const originalLikes = localLikes;
+    const originalLiked = localHasLiked;
 
     try {
       // Optimistic update
-      setCurrentLikes(prev => originalLiked ? prev - 1 : prev + 1);
-      setHasLiked(!originalLiked);
+      const newLikes = originalLiked ? originalLikes - 1 : originalLikes + 1;
+      setLocalLikes(newLikes);
+      setLocalHasLiked(!originalLiked);
+
+      // Update in context immediately for optimistic UI
+      updateMemeInState(meme._id, newLikes, !originalLiked);
 
       // Call backend
       const updatedLikes = await likeMeme(meme._id);
+      
       if (typeof updatedLikes === 'number') {
-        setCurrentLikes(updatedLikes);
+        setLocalLikes(updatedLikes);
         const userLiked = updatedLikes > originalLikes;
-        setHasLiked(userLiked);
+        setLocalHasLiked(userLiked);
+        
+        // Update in context with confirmed backend data
+        updateMemeInState(meme._id, updatedLikes, userLiked);
       }
     } catch (error) {
       console.error('Error liking meme:', error);
-      setCurrentLikes(originalLikes);
-      setHasLiked(originalLiked);
-      // Use a toast notification instead of alert
+      setLocalLikes(originalLikes);
+      setLocalHasLiked(originalLiked);
+      // Revert context update
+      updateMemeInState(meme._id, originalLikes, originalLiked);
       console.error('Failed to update like. Please try again.');
     } finally {
       setIsLiking(false);
-      setTimeout(() => setLikeAnimation(false));
+      setTimeout(() => setLikeAnimation(false), 1000);
     }
-  }, [user, isLiking, currentLikes, hasLiked, likeMeme, meme._id]);
+  }, [user, isLiking, localLikes, localHasLiked, likeMeme, meme._id, updateMemeInState]);
 
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
   const handleImageClick = useCallback(() => setShowModal(true), []);
@@ -197,7 +204,7 @@ const MemeCard = ({ meme, hideLikeButton }) => {
           isDarkMode={isDarkMode}
           onClick={handleImageClick}
           likeAnimation={likeAnimation}
-          hasLiked={hasLiked}
+          hasLiked={localHasLiked}
         />
 
         <div className="p-3 h-24 flex flex-col justify-between">
@@ -246,15 +253,15 @@ const MemeCard = ({ meme, hideLikeButton }) => {
               <div className={`px-1.5 py-1 rounded-md text-xs font-semibold flex items-center justify-center ${
                 isDarkMode ? 'bg-gray-700 text-purple-300' : 'bg-gray-100 text-blue-700'
               }`}>
-                my meme
+                {`${localLikes} ${localLikes === 1 ? 'like' : 'likes'}`}
               </div>
             ) : (
               <LikeButton 
                 onClick={handleLike}
                 disabled={!user || isLiking}
-                hasLiked={hasLiked}
+                hasLiked={localHasLiked}
                 isLiking={isLiking}
-                likes={currentLikes}
+                likes={localLikes}
                 isDarkMode={isDarkMode}
                 user={user}
               />
@@ -316,15 +323,15 @@ const MemeCard = ({ meme, hideLikeButton }) => {
                     <div className={`px-2.5 py-1 rounded-md text-sm font-semibold flex items-center justify-center ${
                       isDarkMode ? 'bg-gray-700 text-purple-300' : 'bg-gray-100 text-blue-700'
                     }`}>
-                      my meme
+                      {`${localLikes} ${localLikes === 1 ? 'like' : 'likes'}`}
                     </div>
                   ) : (
                     <LikeButton 
                       onClick={handleLike}
                       disabled={!user || isLiking}
-                      hasLiked={hasLiked}
+                      hasLiked={localHasLiked}
                       isLiking={isLiking}
-                      likes={currentLikes}
+                      likes={localLikes}
                       isDarkMode={isDarkMode}
                       user={user}
                     />

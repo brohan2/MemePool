@@ -44,7 +44,7 @@ const TopMemeFeed = () => {
                 >
                   <MemeCard meme={meme} hideLikeButton={isOwnMeme} />
                   {/* Rank badge inside the card at top right */}
-                  <div className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm z-20 shadow-lg backdrop-blur-sm ${
+                  <div className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm z-20 shadow-lg backdrop-blur-sm cursor-pointer ${
                     idx === 0 ? 'bg-yellow-400/90 text-yellow-900' : idx === 1 ? 'bg-gray-300/90 text-gray-800' : 'bg-orange-400/90 text-orange-900'
                   }`}>
                     {idx + 1}
