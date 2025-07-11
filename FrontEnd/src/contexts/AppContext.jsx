@@ -89,7 +89,7 @@ export const AppProvider = ({ children }) => {
       id: userInfo.id,
       username: userInfo.username,
       email: userInfo.email,
-      avatar: `https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=100`,
+      avatar: `https://cdn.gulte.com/wp-content/uploads/2021/02/Brahmi.jpg`,
       createdAt: new Date()
     };
 
@@ -169,7 +169,7 @@ export const AppProvider = ({ children }) => {
       id: userInfo.id,
       username: userInfo.username || username,
       email: userInfo.email,
-      avatar: `https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=100`,
+      avatar: `https://cdn.gulte.com/wp-content/uploads/2021/02/Brahmi.jpg`,
       createdAt: new Date()
     };
 

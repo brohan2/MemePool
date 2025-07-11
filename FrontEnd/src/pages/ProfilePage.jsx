@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../contexts/AppContext';
-import { Edit3, Trash2, Calendar, Heart, ImageIcon, User } from 'lucide-react';
+import { Trash2, Calendar, Heart, ImageIcon, User } from 'lucide-react';
 
 const ProfilePage = () => {
   const { user, deleteMeme, isDarkMode, fetchUserMemes } = useAppContext();
-  const [editingMeme, setEditingMeme] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [userMemes, setUserMemes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
